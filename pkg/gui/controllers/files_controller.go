@@ -43,7 +43,7 @@ func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types
 	return []*types.Binding{
 		{
 			Key:               opts.GetKey(opts.Config.Universal.Select),
-			Handler:           self.withItems(self.press),
+			Handler:           self.withItems(self.pressAndMoveToNextFile),
 			GetDisabledReason: self.require(self.itemsSelected()),
 			Description:       self.c.Tr.Stage,
 			Tooltip:           self.c.Tr.StageTooltip,
@@ -492,6 +492,33 @@ func (self *FilesController) press(nodes []*filetree.FileNode) error {
 
 	self.context().HandleFocus(types.OnFocusOpts{})
 	return nil
+}
+
+func (self *FilesController) pressAndMoveToNextFile(nodes []*filetree.FileNode) error {
+	isSingleFile := len(nodes) == 1 && nodes[0].IsFile()
+
+	if err := self.press(nodes); err != nil {
+		return err
+	}
+
+	if isSingleFile {
+		self.moveToNextFile()
+	}
+
+	return nil
+}
+
+func (self *FilesController) moveToNextFile() {
+	currentIdx := self.context().GetSelectedLineIdx()
+	totalItems := self.context().Len()
+
+	for i := currentIdx + 1; i < totalItems; i++ {
+		node := self.context().Get(i)
+		if node.IsFile() {
+			self.context().SetSelection(i)
+			return
+		}
+	}
 }
 
 func (self *FilesController) Context() types.Context {
