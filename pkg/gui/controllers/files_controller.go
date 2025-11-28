@@ -938,20 +938,23 @@ func (self *FilesController) setStatusFiltering(filter filetree.FileTreeDisplayF
 }
 
 func (self *FilesController) edit(nodes []*filetree.FileNode) error {
-	return self.c.Helpers().Files.EditFiles(lo.FilterMap(nodes,
-		func(node *filetree.FileNode, _ int) (string, bool) {
-			return node.GetPath(), node.IsFile()
-		}))
+	files := lo.FilterMap(nodes, func(node *filetree.FileNode, _ int) (string, bool) {
+		return node.GetPath(), node.IsFile()
+	})
+
+	if len(files) > 0 {
+		return self.c.Helpers().Files.EditFiles(files)
+	}
+
+	for _, node := range nodes {
+		if err := self.c.Helpers().Files.OpenDirInEditor(node.GetPath()); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (self *FilesController) canEditFiles(nodes []*filetree.FileNode) *types.DisabledReason {
-	if lo.NoneBy(nodes, func(node *filetree.FileNode) bool { return node.IsFile() }) {
-		return &types.DisabledReason{
-			Text:             self.c.Tr.ErrCannotEditDirectory,
-			ShowErrorInPanel: true,
-		}
-	}
-
 	return nil
 }
 
