@@ -119,6 +119,12 @@ func (self *FileTreeViewModel) SetTree() {
 		if newIdx != -1 && newIdx != prevSelectedLineIdx {
 			self.SetSelection(newIdx)
 		}
+	} else {
+		// On initial load (when tree was empty), select the first file instead of root
+		firstFileIdx := self.findFirstFileIndex()
+		if firstFileIdx > 0 {
+			self.SetSelection(firstFileIdx)
+		}
 	}
 
 	self.ClampSelection()
@@ -219,4 +225,14 @@ func (self *FileTreeViewModel) ExpandAll() {
 	if found {
 		self.SetSelectedLineIdx(index)
 	}
+}
+
+func (self *FileTreeViewModel) findFirstFileIndex() int {
+	for i := 0; i < self.Len(); i++ {
+		node := self.Get(i)
+		if node != nil && node.IsFile() {
+			return i
+		}
+	}
+	return 0
 }
