@@ -62,6 +62,7 @@ _Legenda: `<c-b>` oznacza ctrl+b, `<a-b>` oznacza alt+b, `B` oznacza shift+b_
 | `` b `` | Zobacz opcje bisect |  |
 | `` s `` | Scal | Scal wybrany commit z commitami poniżej. Wiadomość wybranego commita zostanie dołączona do commita poniżej. |
 | `` f `` | Poprawka | Włącz wybrany commit do commita poniżej. Podobnie do fixup, ale wiadomość wybranego commita zostanie odrzucona. |
+| `` c `` | Set fixup message | Set the message option for the fixup commit. The -C option means to use this commit's message instead of the target commit's message. |
 | `` r `` | Przeformułuj | Przeformułuj wiadomość wybranego commita. |
 | `` R `` | Przeformułuj za pomocą edytora |  |
 | `` d `` | Usuń | Usuń wybrany commit. To usunie commit z gałęzi za pomocą rebazowania. Jeśli commit wprowadza zmiany, od których zależą późniejsze commity, być może będziesz musiał rozwiązać konflikty scalania. |
@@ -391,6 +392,7 @@ _Legenda: `<c-b>` oznacza ctrl+b, `<a-b>` oznacza alt+b, `B` oznacza shift+b_
 | `` d `` | Usuń | Usuń wybrany zdalny. Wszelkie lokalne gałęzie śledzące gałąź zdalną z tego zdalnego nie zostaną dotknięte. |
 | `` e `` | Edytuj | Edytuj nazwę lub URL wybranego zdalnego. |
 | `` f `` | Pobierz | Pobierz aktualizacje z zdalnego repozytorium. Pobiera nowe commity i gałęzie bez scalania ich z lokalnymi gałęziami. |
+| `` F `` | Add fork remote | Quickly add a fork remote by replacing the owner in the origin URL and optionally check out a branch from new remote. |
 | `` / `` | Filtruj bieżący widok po tekście |  |
 
 ## Zdalne gałęzie

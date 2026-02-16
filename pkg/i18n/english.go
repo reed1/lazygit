@@ -164,7 +164,12 @@ type TranslationSet struct {
 	CannotSquashOrFixupMergeCommit        string
 	Fixup                                 string
 	FixupTooltip                          string
-	SureFixupThisCommit                   string
+	FixupKeepMessage                      string
+	FixupKeepMessageTooltip               string
+	SetFixupMessage                       string
+	SetFixupMessageTooltip                string
+	FixupDiscardMessage                   string
+	FixupDiscardMessageTooltip            string
 	SureSquashThisCommit                  string
 	Squash                                string
 	PickCommitTooltip                     string
@@ -247,8 +252,6 @@ type TranslationSet struct {
 	UpdateFailedErr                       string
 	ConfirmQuitDuringUpdateTitle          string
 	ConfirmQuitDuringUpdate               string
-	MergeToolTitle                        string
-	MergeToolPrompt                       string
 	IntroPopupMessage                     string
 	NonReloadableConfigWarningTitle       string
 	NonReloadableConfigWarning            string
@@ -318,6 +321,8 @@ type TranslationSet struct {
 	ViewRevertOptions                     string
 	NotMergingOrRebasing                  string
 	AlreadyRebasing                       string
+	NotMidRebase                          string
+	MustSelectFixupCommit                 string
 	RecentRepos                           string
 	MergeOptionsTitle                     string
 	RebaseOptionsTitle                    string
@@ -427,6 +432,7 @@ type TranslationSet struct {
 	ViewItemFiles                         string
 	CommitFilesTitle                      string
 	CheckoutCommitFileTooltip             string
+	CannotCheckoutWithModifiedFilesErr    string
 	CanOnlyDiscardFromLocalCommits        string
 	Remove                                string
 	DiscardOldFileChangeTooltip           string
@@ -898,7 +904,6 @@ type TranslationSet struct {
 	SelectedItemIsNotABranch                 string
 	SelectedItemDoesNotHaveFiles             string
 	MultiSelectNotSupportedForSubmodules     string
-	OldCherryPickKeyWarning                  string
 	CommandDoesNotSupportOpeningInEditor     string
 	CustomCommands                           string
 	NoApplicableCommandsInThisContext        string
@@ -967,6 +972,7 @@ type Actions struct {
 	CheckoutFile                     string
 	SquashCommitDown                 string
 	FixupCommit                      string
+	FixupCommitKeepMessage           string
 	RewordCommit                     string
 	DropCommit                       string
 	EditCommit                       string
@@ -1261,7 +1267,12 @@ func EnglishTranslationSet() *TranslationSet {
 		CannotSquashOrFixupFirstCommit:       "There's no commit below to squash into",
 		CannotSquashOrFixupMergeCommit:       "Cannot squash or fixup a merge commit",
 		Fixup:                                "Fixup",
-		SureFixupThisCommit:                  "Are you sure you want to 'fixup' the selected commit(s) into the commit below?",
+		FixupKeepMessage:                     "Fixup and use this commit's message",
+		FixupKeepMessageTooltip:              "Squash the selected commit into the commit below, using this commit's message, discarding the message of the commit below.",
+		SetFixupMessage:                      "Set fixup message",
+		SetFixupMessageTooltip:               "Set the message option for the fixup commit. The -C option means to use this commit's message instead of the target commit's message.",
+		FixupDiscardMessage:                  "Fixup and discard this commit's message",
+		FixupDiscardMessageTooltip:           "Squash the selected commit into the commit below, discarding this commit's message.",
 		SureSquashThisCommit:                 "Are you sure you want to squash the selected commit(s) into the commit below?",
 		Squash:                               "Squash",
 		PickCommitTooltip:                    "Mark the selected commit to be picked (when mid-rebase). This means that the commit will be retained upon continuing the rebase.",
@@ -1343,8 +1354,6 @@ func EnglishTranslationSet() *TranslationSet {
 		UpdateFailedErr:                      "Update failed: {{.errMessage}}",
 		ConfirmQuitDuringUpdateTitle:         "Currently updating",
 		ConfirmQuitDuringUpdate:              "An update is in progress. Are you sure you want to quit?",
-		MergeToolTitle:                       "Merge tool",
-		MergeToolPrompt:                      "Are you sure you want to open `git mergetool`?",
 		IntroPopupMessage:                    englishIntroPopupMessage,
 		NonReloadableConfigWarningTitle:      "Config changed",
 		NonReloadableConfigWarning:           englishNonReloadableConfigWarning,
@@ -1415,6 +1424,8 @@ func EnglishTranslationSet() *TranslationSet {
 		ViewRevertOptions:                    "View revert options",
 		NotMergingOrRebasing:                 "You are currently neither rebasing nor merging",
 		AlreadyRebasing:                      "Can't perform this action during a rebase",
+		NotMidRebase:                         "This action only works during an interactive rebase",
+		MustSelectFixupCommit:                "This action only works on fixup commits",
 		RecentRepos:                          "Recent repositories",
 		MergeOptionsTitle:                    "Merge options",
 		RebaseOptionsTitle:                   "Rebase options",
@@ -1529,6 +1540,7 @@ func EnglishTranslationSet() *TranslationSet {
 		ViewItemFiles:                        "View files",
 		CommitFilesTitle:                     "Commit files",
 		CheckoutCommitFileTooltip:            "Checkout file. This replaces the file in your working tree with the version from the selected commit.",
+		CannotCheckoutWithModifiedFilesErr:   "You have local modifications for the file(s) you are trying to check out. You need to stash or discard these first.",
 		CanOnlyDiscardFromLocalCommits:       "Changes can only be discarded from local commits",
 		Remove:                               "Remove",
 		DiscardOldFileChangeTooltip:          "Discard this commit's changes to this file. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes this file.",
@@ -1995,7 +2007,6 @@ func EnglishTranslationSet() *TranslationSet {
 		SelectedItemIsNotABranch:                 "Selected item is not a branch",
 		SelectedItemDoesNotHaveFiles:             "Selected item does not have files to view",
 		MultiSelectNotSupportedForSubmodules:     "Multiselection not supported for submodules",
-		OldCherryPickKeyWarning:                  "The 'c' key is no longer the default key for copying commits to cherry pick. Please use `{{.copy}}` instead (and `{{.paste}}` to paste). The reason for this change is that the 'v' key for selecting a range of lines when staging is now also used for selecting a range of lines in any list view, meaning that we needed to find a new key for pasting commits, and if we're going to now use `{{.paste}}` for pasting commits, we may as well use `{{.copy}}` for copying them. If you want to configure the keybindings to get the old behaviour, set the following in your config:\n\nkeybinding:\n  universal:\n    toggleRangeSelect: <something other than v>\n  commits:\n    cherryPickCopy: 'c'\n    pasteCommits: 'v'",
 		CommandDoesNotSupportOpeningInEditor:     "This command doesn't support switching to the editor",
 		CustomCommands:                           "Custom commands",
 		NoApplicableCommandsInThisContext:        "(No applicable commands in this context)",
@@ -2027,6 +2038,7 @@ func EnglishTranslationSet() *TranslationSet {
 			CheckoutFile:                     "Checkout file",
 			SquashCommitDown:                 "Squash commit down",
 			FixupCommit:                      "Fixup commit",
+			FixupCommitKeepMessage:           "Fixup commit (keep message)",
 			RewordCommit:                     "Reword commit",
 			DropCommit:                       "Drop commit",
 			EditCommit:                       "Edit commit",
@@ -2214,9 +2226,9 @@ gui:
 keybinding:
   universal:
     suspendApp: <disabled>
-	redo: <c-z>
+    redo: <c-z>
 
-- The 'git.paging.useConfig' option has been removed. If you were relying on it to configure your pager, you'll have to explicitly set the pager again using the git.paging.pager' option.
+- The 'git.paging.useConfig' option has been removed. If you were relying on it to configure your pager, you'll have to explicitly set the pager again using the 'git.paging.pager' option.
 `,
 		},
 	}

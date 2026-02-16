@@ -703,6 +703,7 @@ keybinding:
     pushTag: P
     setUpstream: u
     fetchRemote: f
+    addForkRemote: F
     sortOrder: s
   worktrees:
     viewWorktreeOptions: w
@@ -712,6 +713,7 @@ keybinding:
     renameCommitWithEditor: R
     viewResetOptions: g
     markCommitAsFixup: f
+    setFixupMessage: c
     createFixupCommit: F
     squashAboveCommits: S
     moveDownCommit: <c-j>
@@ -1077,7 +1079,7 @@ services:
 Where:
 
 - `gitDomain` stands for the domain used by git itself (i.e. the one present on clone URLs), e.g. `git.work.com`
-- `provider` is one of `github`, `bitbucket`, `bitbucketServer`, `azuredevops`, `gitlab` or `gitea`
+- `provider` is one of `github`, `bitbucket`, `bitbucketServer`, `azuredevops`, `gitlab`, `gitea` or `codeberg`
 - `webDomain` is the URL where your git service exposes a web interface and APIs, e.g. `gitservice.work.com`
 
 ## Predefined commit message prefix

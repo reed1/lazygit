@@ -74,6 +74,7 @@ The permitted contexts are:
 | status         | The 'Status' tab                                                                                         |
 | files          | The 'Files' tab                                                                                          |
 | worktrees      | The 'Worktrees' tab                                                                                      |
+| submodules     | The 'Submodules' tab                                                                                     |
 | localBranches  | The 'Local Branches' tab                                                                                 |
 | remotes        | The 'Remotes' tab                                                                                        |
 | remoteBranches | The context you get when pressing enter on a remote in the remotes tab                                   |
@@ -191,6 +192,7 @@ The permitted option fields are:
 | name | The first part of the label | no |
 | description | The second part of the label | no |
 | value | the value that will be used in the command | yes |
+| key | Keybinding to invoke this menu option without needing to navigate to it. Can be a single letter or one of the values from [here](https://github.com/jesseduffield/lazygit/blob/master/docs/keybindings/Custom_Keybindings.md) | no |
 
 If an option has no name the value will be displayed to the user in place of the name, so you're allowed to only include the value like so:
 
@@ -231,6 +233,34 @@ customCommands:
             name: 'release branch'
             description: 'branch for a release'
 ```
+
+Here's an example of supplying keybindings for menu options:
+
+```yml
+customCommands:
+  - key: 'a'
+    command: 'echo {{.Form.BranchType | quote}}'
+    context: 'commits'
+    prompts:
+      - type: 'menu'
+        title: 'What kind of branch is it?'
+        key: 'BranchType'
+        options:
+          - value: 'feature'
+            name: 'feature branch'
+            description: 'branch based off develop'
+            key: 'f'
+          - value: 'hotfix'
+            name: 'hotfix branch'
+            description: 'branch based off main for fast bug fixes'
+            key: 'h'
+          - value: 'release'
+            name: 'release branch'
+            description: 'branch for a release'
+            key: 'r'
+```
+
+In this example, pressing 'f', 'h', or 'r' will directly select the corresponding option without needing to navigate to it first.
 
 ### Menu-from-command
 
@@ -298,6 +328,7 @@ SelectedCommit
 SelectedCommitRange
 SelectedFile
 SelectedPath
+SelectedSubmodule
 SelectedLocalBranch
 SelectedRemoteBranch
 SelectedRemote

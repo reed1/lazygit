@@ -163,6 +163,10 @@
           "examples": [
             "feature"
           ]
+        },
+        "key": {
+          "type": "string",
+          "description": "Keybinding to invoke this menu option without needing to navigate to it"
         }
       },
       "additionalProperties": false,
@@ -888,6 +892,10 @@
           "type": "string",
           "default": "f"
         },
+        "addForkRemote": {
+          "type": "string",
+          "default": "F"
+        },
         "sortOrder": {
           "type": "string",
           "default": "s"
@@ -937,6 +945,10 @@
         "markCommitAsFixup": {
           "type": "string",
           "default": "f"
+        },
+        "setFixupMessage": {
+          "type": "string",
+          "default": "c"
         },
         "createFixupCommit": {
           "type": "string",

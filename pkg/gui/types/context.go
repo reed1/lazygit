@@ -109,7 +109,7 @@ type Context interface {
 
 	HandleFocus(opts OnFocusOpts)
 	HandleFocusLost(opts OnFocusLostOpts)
-	FocusLine()
+	FocusLine(scrollIntoView bool)
 	HandleRender()
 	HandleRenderToMain()
 }
@@ -182,6 +182,7 @@ type IListContext interface {
 	IsListContext() // used for type switch
 	RangeSelectEnabled() bool
 	RenderOnlyVisibleLines() bool
+	SetNeedRerenderVisibleLines()
 
 	IndexForGotoBottom() int
 }
@@ -201,12 +202,11 @@ type IPatchExplorerContext interface {
 }
 
 type IViewTrait interface {
-	FocusPoint(yIdx int)
+	FocusPoint(yIdx int, scrollIntoView bool)
 	SetRangeSelectStart(yIdx int)
 	CancelRangeSelect()
 	SetViewPortContent(content string)
-	SetViewPortContentAndClearEverythingElse(content string)
-	SetContentLineCount(lineCount int)
+	SetViewPortContentAndClearEverythingElse(lineCount int, content string)
 	SetContent(content string)
 	SetFooter(value string)
 	SetOriginX(value int)
@@ -221,8 +221,9 @@ type IViewTrait interface {
 }
 
 type OnFocusOpts struct {
-	ClickedWindowName  string
-	ClickedViewLineIdx int
+	ClickedWindowName       string
+	ClickedViewLineIdx      int
+	ScrollSelectionIntoView bool
 }
 
 type OnFocusLostOpts struct {

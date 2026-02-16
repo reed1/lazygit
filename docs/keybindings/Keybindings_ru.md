@@ -170,6 +170,7 @@ _Связки клавиш_
 | `` b `` | Просмотреть параметры бинарного поиска |  |
 | `` s `` | Объединить коммиты (Squash) | Squash the selected commit into the commit below it. The selected commit's message will be appended to the commit below it. |
 | `` f `` | Объединить несколько коммитов в один отбросив сообщение коммита (Fixup)  | Meld the selected commit into the commit below it. Similar to squash, but the selected commit's message will be discarded. |
+| `` c `` | Set fixup message | Set the message option for the fixup commit. The -C option means to use this commit's message instead of the target commit's message. |
 | `` r `` | Перефразировать коммит | Reword the selected commit's message. |
 | `` R `` | Переписать коммит с помощью редактора |  |
 | `` d `` | Удалить коммит | Drop the selected commit. This will remove the commit from the branch via a rebase. If the commit makes changes that later commits depend on, you may need to resolve merge conflicts. |
@@ -363,6 +364,7 @@ _Связки клавиш_
 | `` d `` | Remove | Remove the selected remote. Any local branches tracking a remote branch from the remote will be unaffected. |
 | `` e `` | Edit | Редактировать удалённый репозитории |
 | `` f `` | Получить изменения | Получение изменения из удалённого репозитория |
+| `` F `` | Add fork remote | Quickly add a fork remote by replacing the owner in the origin URL and optionally check out a branch from new remote. |
 | `` / `` | Filter the current view by text |  |
 
 ## Файлы

@@ -4,7 +4,7 @@ package hosting_service
 // at https://regex101.com using the flavor Golang
 var defaultUrlRegexStrings = []string{
 	`^(?:https?|ssh)://[^/]+/(?P<owner>.*)/(?P<repo>.*?)(?:\.git)?$`,
-	`^.*?@.*:/*(?P<owner>.*)/(?P<repo>.*?)(?:\.git)?$`,
+	`^(.*?@)?.*:/*(?P<owner>.*)/(?P<repo>.*?)(?:\.git)?$`,
 }
 var defaultRepoURLTemplate = "https://{{.webDomain}}/{{.owner}}/{{.repo}}"
 
@@ -75,6 +75,15 @@ var giteaServiceDef = ServiceDefinition{
 	repoURLTemplate:                 defaultRepoURLTemplate,
 }
 
+var codebergServiceDef = ServiceDefinition{
+	provider:                        "codeberg",
+	pullRequestURLIntoDefaultBranch: "/compare/{{.From}}",
+	pullRequestURLIntoTargetBranch:  "/compare/{{.To}}...{{.From}}",
+	commitURL:                       "/commit/{{.CommitHash}}",
+	regexStrings:                    defaultUrlRegexStrings,
+	repoURLTemplate:                 defaultRepoURLTemplate,
+}
+
 var serviceDefinitions = []ServiceDefinition{
 	githubServiceDef,
 	bitbucketServiceDef,
@@ -82,6 +91,7 @@ var serviceDefinitions = []ServiceDefinition{
 	azdoServiceDef,
 	bitbucketServerServiceDef,
 	giteaServiceDef,
+	codebergServiceDef,
 }
 
 var defaultServiceDomains = []ServiceDomain{
@@ -109,5 +119,10 @@ var defaultServiceDomains = []ServiceDomain{
 		serviceDefinition: giteaServiceDef,
 		gitDomain:         "try.gitea.io",
 		webDomain:         "try.gitea.io",
+	},
+	{
+		serviceDefinition: codebergServiceDef,
+		gitDomain:         "codeberg.org",
+		webDomain:         "codeberg.org",
 	},
 }

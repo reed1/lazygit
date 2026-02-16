@@ -551,6 +551,7 @@ type KeybindingCommitsConfig struct {
 	RenameCommitWithEditor         string `yaml:"renameCommitWithEditor"`
 	ViewResetOptions               string `yaml:"viewResetOptions"`
 	MarkCommitAsFixup              string `yaml:"markCommitAsFixup"`
+	SetFixupMessage                string `yaml:"setFixupMessage"`
 	CreateFixupCommit              string `yaml:"createFixupCommit"`
 	SquashAboveCommits             string `yaml:"squashAboveCommits"`
 	MoveDownCommit                 string `yaml:"moveDownCommit"`
@@ -733,6 +734,8 @@ type CustomCommandMenuOption struct {
 	Description string `yaml:"description"`
 	// The value that will be used in the command
 	Value string `yaml:"value" jsonschema:"example=feature,minLength=1"`
+	// Keybinding to invoke this menu option without needing to navigate to it
+	Key string `yaml:"key"`
 }
 
 type CustomIconsConfig struct {
@@ -1006,6 +1009,7 @@ func GetDefaultConfig() *UserConfig {
 				RenameCommitWithEditor:         "R",
 				ViewResetOptions:               "g",
 				MarkCommitAsFixup:              "f",
+				SetFixupMessage:                "c",
 				CreateFixupCommit:              "F",
 				SquashAboveCommits:             "S",
 				MoveDownCommit:                 "<c-j>",
