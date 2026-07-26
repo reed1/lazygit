@@ -12,6 +12,12 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/i18n"
 )
 
+const TmpCommitSubject = "tmp"
+
+func FormatTmpCommitWarning() string {
+	return style.FgRed.SetBold().Sprint("⚠️ TMP COMMIT ⚠️")
+}
+
 func FormatStatus(
 	repoName string,
 	currentBranch *models.Branch,
