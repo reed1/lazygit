@@ -518,15 +518,27 @@ func (self *FilesController) pressAndMoveToNextFile(nodes []*filetree.FileNode) 
 }
 
 func (self *FilesController) moveToNextFile() {
-	currentIdx := self.context().GetSelectedLineIdx()
-	totalItems := self.context().Len()
+	ctx := self.context()
+	currentIdx := ctx.GetSelectedLineIdx()
+	totalItems := ctx.Len()
 
 	for i := currentIdx + 1; i < totalItems; i++ {
-		node := self.context().Get(i)
-		if node.IsFile() {
-			self.context().SetSelection(i)
-			return
+		node := ctx.Get(i)
+		if !node.IsFile() {
+			continue
 		}
+
+		ctx.SetSelection(i)
+
+		originYBefore := ctx.GetView().OriginY()
+		checkScrollDown(ctx.GetViewTrait(), self.c.UserConfig(),
+			ctx.ModelIndexToViewIndex(currentIdx), ctx.ModelIndexToViewIndex(i))
+		if originYBefore != ctx.GetView().OriginY() {
+			ctx.SetNeedRerenderVisibleLines()
+		}
+
+		ctx.HandleFocus(types.OnFocusOpts{ScrollSelectionIntoView: true})
+		return
 	}
 }
 
