@@ -9,6 +9,11 @@ import (
 )
 
 func (gui *Gui) handleCreateExtrasMenuPanel() error {
+	// fork: command log is hidden
+	if forkCommandLogHidden {
+		return nil
+	}
+
 	return gui.c.Menu(types.CreateMenuOptions{
 		Title: gui.c.Tr.CommandLog,
 		Items: []*types.MenuItem{
@@ -37,6 +42,11 @@ func (gui *Gui) handleCreateExtrasMenuPanel() error {
 }
 
 func (gui *Gui) handleFocusCommandLog() error {
+	// fork: command log is hidden
+	if forkCommandLogHidden {
+		return nil
+	}
+
 	gui.c.State().SetShowExtrasWindow(true)
 	// TODO: is this necessary? Can't I just call 'return from context'?
 	gui.State.Contexts.CommandLog.SetParentContext(gui.c.Context().CurrentSide())

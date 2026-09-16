@@ -14,6 +14,7 @@ type Views struct {
 	ReflogCommits  *gocui.View
 	Commits        *gocui.View
 	Stash          *gocui.View
+	DiffStats      *gocui.View // fork: Changes panel
 
 	Main                   *gocui.View
 	Secondary              *gocui.View

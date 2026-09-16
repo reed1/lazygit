@@ -38,6 +38,7 @@ func (gui *Gui) orderedViewNameMappings() []viewNameMapping {
 		{viewPtr: &gui.Views.ReflogCommits, name: "reflogCommits"},
 		{viewPtr: &gui.Views.Commits, name: "commits"},
 		{viewPtr: &gui.Views.Stash, name: "stash"},
+		{viewPtr: &gui.Views.DiffStats, name: "diffStats"}, // fork: Changes panel
 		{viewPtr: &gui.Views.SubCommits, name: "subCommits"},
 		{viewPtr: &gui.Views.CommitFiles, name: "commitFiles"},
 

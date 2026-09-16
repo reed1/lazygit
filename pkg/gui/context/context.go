@@ -119,6 +119,7 @@ type ContextTree struct {
 	SearchPrefix  types.Context
 	Search        types.Context
 	Information   types.Context
+	DiffStats     types.Context // fork: Changes panel
 	Limit         types.Context
 	StatusSpacer1 types.Context
 	StatusSpacer2 types.Context
@@ -163,6 +164,7 @@ func (self *ContextTree) Flatten() []types.Context {
 		self.SearchPrefix,
 		self.Search,
 		self.Information,
+		self.DiffStats, // fork: Changes panel
 		self.Limit,
 		self.StatusSpacer1,
 		self.StatusSpacer2,

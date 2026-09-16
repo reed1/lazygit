@@ -95,14 +95,14 @@ func (self *WindowArrangementHelper) GetWindowDimensions(informationStr string, 
 		ScreenMode:        repoState.GetScreenMode(),
 		AppStatus:         appStatus,
 		InformationStr:    informationStr,
-		ShowExtrasWindow:  self.c.State().GetShowExtrasWindow(),
+		ShowExtrasWindow:  false, // fork: command log is hidden
 		InDemo:            self.c.InDemo(),
 		IsAnyModeActive:   self.modeHelper.IsAnyModeActive(),
 		InSearchPrompt:    repoState.InSearchPrompt(),
 		SearchPrefix:      searchPrefix,
 	}
 
-	return GetWindowDimensions(args)
+	return forkReplaceStashWithDiffStats(GetWindowDimensions(args)) // fork: Changes panel
 }
 
 func shouldUsePortraitMode(args WindowArrangementArgs) bool {
@@ -412,7 +412,7 @@ func getDefaultStashWindowBox(args WindowArrangementArgs) *boxlayout.Box {
 	if args.CurrentSideWindow == "stash" {
 		box.Weight = 1
 	} else {
-		box.Size = 3
+		box.Size = 4 // fork: room for the two-line Changes panel
 	}
 
 	return box
