@@ -431,7 +431,7 @@ func (gui *Gui) resetHelpersAndControllers() {
 		controllers.AttachControllers(context, listControllerFactory.Create(context))
 	}
 
-	gui.forkAttachDiffStats() // fork: Changes panel follows the selected commit
+	gui.attachDiffStats() // fork: Changes panel follows the selected commit
 }
 
 func (gui *Gui) getCommitMessageSetTextareaTextFn(getView func() *gocui.View) func(string) {

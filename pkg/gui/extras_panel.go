@@ -10,7 +10,7 @@ import (
 
 func (gui *Gui) handleCreateExtrasMenuPanel() error {
 	// fork: command log is hidden
-	if forkCommandLogHidden {
+	if commandLogHidden {
 		return nil
 	}
 
@@ -43,7 +43,7 @@ func (gui *Gui) handleCreateExtrasMenuPanel() error {
 
 func (gui *Gui) handleFocusCommandLog() error {
 	// fork: command log is hidden
-	if forkCommandLogHidden {
+	if commandLogHidden {
 		return nil
 	}
 

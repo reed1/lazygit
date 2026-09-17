@@ -520,7 +520,7 @@ func (self *RefreshHelper) refreshFilesAndSubmodules() error {
 		return err
 	}
 
-	self.forkRefreshDiffStats() // fork: Changes panel
+	self.refreshDiffStats() // fork: Changes panel
 
 	self.c.OnUIThread(func() error {
 		self.refreshView(self.c.Contexts().Submodules)

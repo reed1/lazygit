@@ -18,9 +18,9 @@ import (
 // summarises all uncommitted changes against HEAD, or the selected commit's
 // changes while browsing commits.
 
-const forkDiffStatsTitle = "Changes"
+const diffStatsTitle = "Changes"
 
-func forkReplaceStashWithDiffStats(windows map[string]boxlayout.Dimensions) map[string]boxlayout.Dimensions {
+func replaceStashWithDiffStats(windows map[string]boxlayout.Dimensions) map[string]boxlayout.Dimensions {
 	if dimensions, ok := windows["stash"]; ok {
 		windows["diffStats"] = dimensions
 		delete(windows, "stash")
@@ -29,41 +29,41 @@ func forkReplaceStashWithDiffStats(windows map[string]boxlayout.Dimensions) map[
 	return windows
 }
 
-func (self *RefreshHelper) forkRefreshDiffStats() {
-	if self.forkDiffStatsFollowsCommit() {
+func (self *RefreshHelper) refreshDiffStats() {
+	if self.diffStatsFollowsCommit() {
 		return
 	}
 
-	self.ForkRenderUncommittedDiffStats()
+	self.RenderUncommittedDiffStats()
 }
 
 // While a commit list (or the files of a commit opened from it) is the side
 // context, the Changes panel shows the selected commit's stats instead.
-var ForkCommitDiffStatsContextKeys = []types.ContextKey{
+var CommitDiffStatsContextKeys = []types.ContextKey{
 	context.LOCAL_COMMITS_CONTEXT_KEY,
 	context.REFLOG_COMMITS_CONTEXT_KEY,
 	context.SUB_COMMITS_CONTEXT_KEY,
 	context.COMMIT_FILES_CONTEXT_KEY,
 }
 
-func (self *RefreshHelper) forkDiffStatsFollowsCommit() bool {
-	return lo.Contains(ForkCommitDiffStatsContextKeys, self.c.Context().CurrentSide().GetKey())
+func (self *RefreshHelper) diffStatsFollowsCommit() bool {
+	return lo.Contains(CommitDiffStatsContextKeys, self.c.Context().CurrentSide().GetKey())
 }
 
-func (self *RefreshHelper) ForkRenderUncommittedDiffStats() {
+func (self *RefreshHelper) RenderUncommittedDiffStats() {
 	stats := self.c.Git().Loaders.FileLoader.GetDiffStats(self.c.Model().Files)
 
 	self.c.OnUIThread(func() error {
-		self.forkSetDiffStatsContent(forkDiffStatsTitle, formatDiffStats(stats))
+		self.setDiffStatsContent(diffStatsTitle, formatDiffStats(stats))
 		return nil
 	})
 }
 
-func (self *RefreshHelper) ForkRenderCommitDiffStats(commitContext interface{ GetSelected() *models.Commit }) {
+func (self *RefreshHelper) RenderCommitDiffStats(commitContext interface{ GetSelected() *models.Commit }) {
 	commit := commitContext.GetSelected()
 	// update-ref todos in an interactive rebase have no hash
 	if commit == nil || commit.Hash() == "" {
-		self.forkSetDiffStatsContent(forkDiffStatsTitle, "")
+		self.setDiffStatsContent(diffStatsTitle, "")
 		return
 	}
 
@@ -73,25 +73,25 @@ func (self *RefreshHelper) ForkRenderCommitDiffStats(commitContext interface{ Ge
 
 		self.c.OnUIThread(func() error {
 			selected := commitContext.GetSelected()
-			if selected == nil || selected.Hash() != hash || !self.forkDiffStatsFollowsCommit() {
+			if selected == nil || selected.Hash() != hash || !self.diffStatsFollowsCommit() {
 				return nil
 			}
 
-			title := fmt.Sprintf("%s - %s", forkDiffStatsTitle, utils.ShortHash(hash))
+			title := fmt.Sprintf("%s - %s", diffStatsTitle, utils.ShortHash(hash))
 			if err != nil {
 				self.c.Log.Error(err)
-				self.forkSetDiffStatsContent(title, "")
+				self.setDiffStatsContent(title, "")
 				return nil
 			}
 
-			self.forkSetDiffStatsContent(title, formatDiffStats(stats))
+			self.setDiffStatsContent(title, formatDiffStats(stats))
 			return nil
 		})
 		return nil
 	})
 }
 
-func (self *RefreshHelper) forkSetDiffStatsContent(title string, content string) {
+func (self *RefreshHelper) setDiffStatsContent(title string, content string) {
 	view := self.c.Views().DiffStats
 	view.Title = title
 	self.c.SetViewContent(view, content)

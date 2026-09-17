@@ -31,7 +31,7 @@ While a commit list is focused (commits, reflog, or a branch's commits) the pane
 
 The command log panel below the main view is hidden, so the main view extends to the bottom of the screen. Its keybindings are kept but do nothing (`@` opens no menu), and stash is no longer reachable via side-window navigation (`5`, tab).
 
-Code changes are pooled in `fork_*.go` files; every patch to an upstream file is marked with a `// fork:` comment (`rg "// fork:"` lists them).
+Code changes are pooled in files of their own (`git diff --diff-filter=A --name-only upstream/master...HEAD` lists them); every patch to an upstream file is marked with a `// fork:` comment (`rg "// fork:"` lists them).
 
 ### Select First File on Startup
 

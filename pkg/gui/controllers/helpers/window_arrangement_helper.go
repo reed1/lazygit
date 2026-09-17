@@ -102,7 +102,7 @@ func (self *WindowArrangementHelper) GetWindowDimensions(informationStr string, 
 		SearchPrefix:      searchPrefix,
 	}
 
-	return forkReplaceStashWithDiffStats(GetWindowDimensions(args)) // fork: Changes panel
+	return replaceStashWithDiffStats(GetWindowDimensions(args)) // fork: Changes panel
 }
 
 func shouldUsePortraitMode(args WindowArrangementArgs) bool {
