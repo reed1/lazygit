@@ -27,6 +27,8 @@ The stash panel at the bottom of the side column is replaced by a non-focusable 
 
 The first line is the total lines added and deleted; untracked files count every line as added. The second line counts files that are added (including untracked), removed, and otherwise changed.
 
+While a commit list is focused (commits, reflog, or a branch's commits) the panel shows the selected commit's stats instead, and its title carries the short hash (`Changes - 56f99235`). Opening the commit's files keeps those stats; focusing any other side panel switches back to uncommitted changes. Merge commits are compared against their first parent.
+
 The command log panel below the main view is hidden, so the main view extends to the bottom of the screen. Its keybindings are kept but do nothing (`@` opens no menu), and stash is no longer reachable via side-window navigation (`5`, tab).
 
 Code changes are pooled in `fork_*.go` files; every patch to an upstream file is marked with a `// fork:` comment (`rg "// fork:"` lists them).

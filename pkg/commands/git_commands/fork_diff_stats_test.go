@@ -49,3 +49,27 @@ func TestFileLoaderGetDiffStats(t *testing.T) {
 		FilesRemoved: 1,
 	}, loader.GetDiffStats(files))
 }
+
+func TestCommitCommandsGetCommitDiffStats(t *testing.T) {
+	runner := oscommands.NewFakeRunner(t).
+		ExpectGitArgs([]string{"show", "--format=", "--no-renames", "--diff-merges=first-parent", "--raw", "--numstat", "-z", "abc123"},
+			":000000 100644 000000000 89fb3e525 A\x00new.go\x00"+
+				":100644 100644 653944314 6f16e8a8c M\x00:odd name.go\x00"+
+				":100644 000000 bb36ea03d 000000000 D\x00old.go\x00"+
+				":100644 100644 aaaaaaaaa bbbbbbbbb M\x00image.png\x00"+
+				"69\t0\tnew.go\x0015\t3\t:odd name.go\x000\t12\told.go\x00-\t-\timage.png\x00",
+			nil,
+		)
+
+	instance := buildCommitCommands(commonDeps{runner: runner})
+
+	stats, err := instance.GetCommitDiffStats("abc123")
+	assert.NoError(t, err)
+	assert.Equal(t, DiffStats{
+		LinesAdded:   84,
+		LinesDeleted: 15,
+		FilesAdded:   1,
+		FilesChanged: 2,
+		FilesRemoved: 1,
+	}, stats)
+}

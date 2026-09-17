@@ -260,6 +260,7 @@ func (self *LocalCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 
 func (self *LocalCommitsController) GetOnRenderToMain() func() {
 	return func() {
+		self.c.Helpers().Refresh.ForkRenderCommitDiffStats(self.context()) // fork: Changes panel
 		self.c.Helpers().Diff.WithDiffModeCheck(func() {
 			var task types.UpdateTask
 			commit := self.context().GetSelected()

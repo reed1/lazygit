@@ -39,6 +39,7 @@ func (self *SubCommitsController) context() *context.SubCommitsContext {
 
 func (self *SubCommitsController) GetOnRenderToMain() func() {
 	return func() {
+		self.c.Helpers().Refresh.ForkRenderCommitDiffStats(self.context()) // fork: Changes panel
 		self.c.Helpers().Diff.WithDiffModeCheck(func() {
 			commit := self.context().GetSelected()
 			var task types.UpdateTask

@@ -2,6 +2,7 @@ package git_commands
 
 import (
 	"bytes"
+	"strconv"
 	"strings"
 
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
@@ -66,4 +67,59 @@ func (self *FileLoader) countUntrackedFileLines(path string) int {
 	}
 
 	return lineCount
+}
+
+// Merge commits are compared against their first parent, so the stats cover
+// what the merge brought in.
+func (self *CommitCommands) GetCommitDiffStats(hash string) (DiffStats, error) {
+	cmdArgs := NewGitCmd("show").
+		Arg("--format=", "--no-renames", "--diff-merges=first-parent", "--raw", "--numstat", "-z").
+		Arg(hash).
+		ToArgv()
+
+	output, err := self.cmd.New(cmdArgs).DontLog().RunWithOutput()
+	if err != nil {
+		return DiffStats{}, err
+	}
+
+	return parseCommitDiffStats(output), nil
+}
+
+// Parses --raw entries (":<modes> <hashes> <status>" followed by a path token)
+// and --numstat entries ("<added>\t<deleted>\t<path>"), all NUL-separated.
+func parseCommitDiffStats(output string) DiffStats {
+	stats := DiffStats{}
+
+	tokens := strings.Split(output, "\x00")
+	for i := 0; i < len(tokens); i++ {
+		token := tokens[i]
+
+		if strings.HasPrefix(token, ":") {
+			fields := strings.Fields(token)
+			switch fields[len(fields)-1] {
+			case "A":
+				stats.FilesAdded++
+			case "D":
+				stats.FilesRemoved++
+			default:
+				stats.FilesChanged++
+			}
+			i++
+			continue
+		}
+
+		numstat := strings.SplitN(token, "\t", 3)
+		if len(numstat) != 3 {
+			continue
+		}
+		// binary files report "-" and count as zero lines
+		if added, err := strconv.Atoi(numstat[0]); err == nil {
+			stats.LinesAdded += added
+		}
+		if deleted, err := strconv.Atoi(numstat[1]); err == nil {
+			stats.LinesDeleted += deleted
+		}
+	}
+
+	return stats
 }

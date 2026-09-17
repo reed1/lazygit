@@ -39,6 +39,7 @@ func (self *ReflogCommitsController) context() *context.ReflogCommitsContext {
 
 func (self *ReflogCommitsController) GetOnRenderToMain() func() {
 	return func() {
+		self.c.Helpers().Refresh.ForkRenderCommitDiffStats(self.context()) // fork: Changes panel
 		self.c.Helpers().Diff.WithDiffModeCheck(func() {
 			commit := self.context().GetSelected()
 			var task types.UpdateTask
