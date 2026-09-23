@@ -105,7 +105,7 @@ func (self *StatusController) onClick(opts gocui.ViewMouseBindingOpts) error {
 
 	self.c.Context().Push(self.Context(), types.OnFocusOpts{})
 
-	upstreamStatus := utils.Decolorise(presentation.BranchStatus(currentBranch, types.ItemOperationNone, self.c.Tr, time.Now(), self.c.UserConfig()))
+	upstreamStatus := utils.Decolorise(presentation.StatusPanelBranchStatus(currentBranch, self.c.Helpers().Refresh.HeadCommit(), types.ItemOperationNone, self.c.Tr, time.Now(), self.c.UserConfig())) // fork: head commit age
 	repoName := self.c.Git().RepoPaths.RepoName()
 	workingTreeState := self.c.Git().Status.WorkingTreeState()
 	if workingTreeState.Any() {

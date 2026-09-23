@@ -12,9 +12,9 @@ When pressing the space key (stage/unstage keybinding) on a **file** in the file
 
 Pressing `e` (edit) on a **folder** in the files panel now opens it using the `os.openDirInEditor` config instead of showing an error. This allows configuring a terminal to open at the folder location.
 
-### Tmp Commit Warning in Status Panel
+### Head Commit Age in Status Panel
 
-When the HEAD commit's subject is exactly `tmp`, the status panel content is replaced with `⚠️ TMP COMMIT ⚠️` instead of the usual `repo → branch` line.
+With `LAZYGIT_REED_FORK=1` set, the status panel shows the HEAD commit's age (e.g. `5h`) in place of the `✓` that marks a branch in sync with its upstream.
 
 ### Changes Panel Instead of Stash and Command Log
 

@@ -12,15 +12,10 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/i18n"
 )
 
-const TmpCommitSubject = "tmp"
-
-func FormatTmpCommitWarning() string {
-	return style.FgRed.SetBold().Sprint("⚠️ TMP COMMIT ⚠️")
-}
-
 func FormatStatus(
 	repoName string,
 	currentBranch *models.Branch,
+	headCommit *models.Commit, // fork: head commit age
 	itemOperation types.ItemOperation,
 	linkedWorktreeName string,
 	workingTreeState models.WorkingTreeState,
@@ -30,7 +25,7 @@ func FormatStatus(
 	status := ""
 
 	if currentBranch.IsRealBranch() {
-		status += BranchStatus(currentBranch, itemOperation, tr, time.Now(), userConfig)
+		status += StatusPanelBranchStatus(currentBranch, headCommit, itemOperation, tr, time.Now(), userConfig) // fork: head commit age
 		if status != "" {
 			status += " "
 		}

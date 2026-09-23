@@ -707,11 +707,6 @@ func (self *RefreshHelper) refreshStatus() {
 	self.c.Mutexes().RefreshingStatusMutex.Lock()
 	defer self.c.Mutexes().RefreshingStatusMutex.Unlock()
 
-	if self.headCommitIsTmp() {
-		self.c.SetViewContent(self.c.Views().Status, presentation.FormatTmpCommitWarning())
-		return
-	}
-
 	currentBranch := self.refsHelper.GetCheckedOutRef()
 	if currentBranch == nil {
 		// need to wait for branches to refresh
@@ -723,20 +718,9 @@ func (self *RefreshHelper) refreshStatus() {
 
 	repoName := self.c.Git().RepoPaths.RepoName()
 
-	status := presentation.FormatStatus(repoName, currentBranch, types.ItemOperationNone, linkedWorktreeName, workingTreeState, self.c.Tr, self.c.UserConfig())
+	status := presentation.FormatStatus(repoName, currentBranch, self.HeadCommit(), types.ItemOperationNone, linkedWorktreeName, workingTreeState, self.c.Tr, self.c.UserConfig()) // fork: head commit age
 
 	self.c.SetViewContent(self.c.Views().Status, status)
-}
-
-func (self *RefreshHelper) headCommitIsTmp() bool {
-	self.c.Mutexes().LocalCommitsMutex.Lock()
-	defer self.c.Mutexes().LocalCommitsMutex.Unlock()
-
-	headCommit, found := lo.Find(self.c.Model().Commits, func(commit *models.Commit) bool {
-		return !commit.IsTODO()
-	})
-
-	return found && headCommit.Name == presentation.TmpCommitSubject
 }
 
 func (self *RefreshHelper) refForLog() string {
