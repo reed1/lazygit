@@ -135,6 +135,5 @@ func (self *WindowHelper) WindowForView(viewName string) string {
 }
 
 func (self *WindowHelper) SideWindows() []string {
-	// fork: stash is hidden behind the Changes panel, so it is not a side window
-	return []string{"status", "files", "branches", "commits"}
+	return withoutStashSideWindow([]string{"status", "files", "branches", "commits", "stash"}) // fork: Changes panel
 }

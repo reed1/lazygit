@@ -510,7 +510,7 @@ func (self *FilesController) pressAndMoveToNextFile(nodes []*filetree.FileNode) 
 		return err
 	}
 
-	if isSingleFile {
+	if isSingleFile && !utils.UpstreamBehavior() {
 		self.moveToNextFile()
 	}
 
@@ -976,6 +976,13 @@ func (self *FilesController) edit(nodes []*filetree.FileNode) error {
 }
 
 func (self *FilesController) canEditFiles(nodes []*filetree.FileNode) *types.DisabledReason {
+	if utils.UpstreamBehavior() && lo.NoneBy(nodes, func(node *filetree.FileNode) bool { return node.IsFile() }) {
+		return &types.DisabledReason{
+			Text:             self.c.Tr.ErrCannotEditDirectory,
+			ShowErrorInPanel: true,
+		}
+	}
+
 	return nil
 }
 

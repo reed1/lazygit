@@ -20,7 +20,26 @@ import (
 
 const diffStatsTitle = "Changes"
 
+func collapsedStashWindowSize() int {
+	if utils.UpstreamBehavior() {
+		return 3
+	}
+	return 4
+}
+
+// Stash is hidden behind the Changes panel, so it is not a side window.
+func withoutStashSideWindow(windows []string) []string {
+	if utils.UpstreamBehavior() {
+		return windows
+	}
+	return lo.Without(windows, "stash")
+}
+
 func replaceStashWithDiffStats(windows map[string]boxlayout.Dimensions) map[string]boxlayout.Dimensions {
+	if utils.UpstreamBehavior() {
+		return windows
+	}
+
 	if dimensions, ok := windows["stash"]; ok {
 		windows["diffStats"] = dimensions
 		delete(windows, "stash")
@@ -30,7 +49,7 @@ func replaceStashWithDiffStats(windows map[string]boxlayout.Dimensions) map[stri
 }
 
 func (self *RefreshHelper) refreshDiffStats() {
-	if self.diffStatsFollowsCommit() {
+	if utils.UpstreamBehavior() || self.diffStatsFollowsCommit() {
 		return
 	}
 
@@ -51,6 +70,10 @@ func (self *RefreshHelper) diffStatsFollowsCommit() bool {
 }
 
 func (self *RefreshHelper) RenderUncommittedDiffStats() {
+	if utils.UpstreamBehavior() {
+		return
+	}
+
 	stats := self.c.Git().Loaders.FileLoader.GetDiffStats(self.c.Model().Files)
 
 	self.c.OnUIThread(func() error {
@@ -60,6 +83,10 @@ func (self *RefreshHelper) RenderUncommittedDiffStats() {
 }
 
 func (self *RefreshHelper) RenderCommitDiffStats(commitContext interface{ GetSelected() *models.Commit }) {
+	if utils.UpstreamBehavior() {
+		return
+	}
+
 	commit := commitContext.GetSelected()
 	// update-ref todos in an interactive rebase have no hash
 	if commit == nil || commit.Hash() == "" {

@@ -38,6 +38,7 @@ const (
 var hostEnvironmentAllowlist = [...]string{
 	PATH,
 	TERM,
+	"LAZYGIT_UPSTREAM_BEHAVIOR", // fork: see utils.UpstreamBehavior
 }
 
 // Returns a copy of the environment filtered by

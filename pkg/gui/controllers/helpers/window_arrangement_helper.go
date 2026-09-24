@@ -95,7 +95,7 @@ func (self *WindowArrangementHelper) GetWindowDimensions(informationStr string, 
 		ScreenMode:        repoState.GetScreenMode(),
 		AppStatus:         appStatus,
 		InformationStr:    informationStr,
-		ShowExtrasWindow:  false, // fork: command log is hidden
+		ShowExtrasWindow:  self.c.State().GetShowExtrasWindow() && utils.UpstreamBehavior(), // fork: command log is hidden
 		InDemo:            self.c.InDemo(),
 		IsAnyModeActive:   self.modeHelper.IsAnyModeActive(),
 		InSearchPrompt:    repoState.InSearchPrompt(),
@@ -412,7 +412,7 @@ func getDefaultStashWindowBox(args WindowArrangementArgs) *boxlayout.Box {
 	if args.CurrentSideWindow == "stash" {
 		box.Weight = 1
 	} else {
-		box.Size = 4 // fork: room for the two-line Changes panel
+		box.Size = collapsedStashWindowSize() // fork: room for the two-line Changes panel
 	}
 
 	return box

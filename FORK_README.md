@@ -2,6 +2,16 @@
 
 This is a personal fork of [LazyGit](https://github.com/jesseduffield/lazygit) with custom modifications.
 
+## Running Tests
+
+Every change below is switched off when `LAZYGIT_UPSTREAM_BEHAVIOR=1` is set, so upstream's tests run unmodified against upstream behavior. The `make` test targets (`make test`, `make unit-test`, `make integration-test-*`) set it; when running `go test` directly, set it yourself:
+
+```
+LAZYGIT_UPSTREAM_BEHAVIOR=1 go test ./...
+```
+
+Day-to-day use leaves it unset.
+
 ## Changes from Upstream
 
 ### Auto-Navigation to Next File on Stage
@@ -14,7 +24,7 @@ Pressing `e` (edit) on a **folder** in the files panel now opens it using the `o
 
 ### Head Commit Age in Status Panel
 
-With `LAZYGIT_REED_FORK=1` set, the status panel shows the HEAD commit's age (e.g. `5h`) in place of the `✓` that marks a branch in sync with its upstream.
+The status panel shows the HEAD commit's age (e.g. `5h`) in place of the `✓` that marks a branch in sync with its upstream.
 
 ### Changes Panel Instead of Stash and Command Log
 

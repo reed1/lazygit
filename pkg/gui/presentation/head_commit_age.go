@@ -1,7 +1,6 @@
 package presentation
 
 import (
-	"os"
 	"time"
 
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
@@ -12,8 +11,8 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/utils"
 )
 
-// Like BranchStatus, but with LAZYGIT_REED_FORK=1 the in-sync checkmark is
-// replaced by the head commit's age.
+// Like BranchStatus, but the in-sync checkmark is replaced by the head
+// commit's age.
 func StatusPanelBranchStatus(
 	branch *models.Branch,
 	headCommit *models.Commit,
@@ -23,7 +22,7 @@ func StatusPanelBranchStatus(
 	userConfig *config.UserConfig,
 ) string {
 	status := BranchStatus(branch, itemOperation, tr, now, userConfig)
-	if os.Getenv("LAZYGIT_REED_FORK") == "1" && headCommit != nil && status == style.FgGreen.Sprint("✓") {
+	if !utils.UpstreamBehavior() && headCommit != nil && status == style.FgGreen.Sprint("✓") {
 		return style.FgCyan.Sprint(utils.UnixToTimeAgo(headCommit.UnixTimestamp))
 	}
 	return status

@@ -1,3 +1,6 @@
+# fork: tests run against upstream behavior, see utils.UpstreamBehavior
+test unit-test integration-test-tui integration-test-cli integration-test-all: export LAZYGIT_UPSTREAM_BEHAVIOR := 1
+
 .PHONY: all
 all: build
 

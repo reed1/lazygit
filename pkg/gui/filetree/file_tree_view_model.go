@@ -119,7 +119,7 @@ func (self *FileTreeViewModel) SetTree() {
 		if newIdx != -1 && newIdx != prevSelectedLineIdx {
 			self.SetSelection(newIdx)
 		}
-	} else {
+	} else if !utils.UpstreamBehavior() {
 		// On initial load (when tree was empty), select the first file instead of root
 		firstFileIdx := self.findFirstFileIndex()
 		if firstFileIdx > 0 {
