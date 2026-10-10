@@ -2,6 +2,7 @@ package git_commands
 
 import (
 	"bytes"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -22,13 +23,18 @@ type DiffStats struct {
 func (self *FileLoader) GetDiffStats(files []*models.File) DiffStats {
 	stats := DiffStats{}
 
-	fileDiffs, err := self.getFileDiffs()
+	numstat, err := self.cmd.New(
+		NewGitCmd("diff").
+			Arg("--numstat", "-z", self.findRenamesArg(), "HEAD").
+			ToArgv(),
+	).DontLog().RunWithOutput()
 	if err != nil {
 		self.Log.Error(err)
-	}
-	for _, diff := range fileDiffs {
-		stats.LinesAdded += diff.LinesAdded
-		stats.LinesDeleted += diff.LinesDeleted
+	} else if lineStats, err := parseDiffStats(numstat); err != nil {
+		self.Log.Error(err)
+	} else {
+		stats.LinesAdded = lineStats.LinesAdded
+		stats.LinesDeleted = lineStats.LinesDeleted
 	}
 
 	for _, file := range files {
@@ -69,11 +75,15 @@ func (self *FileLoader) countUntrackedFileLines(path string) int {
 	return lineCount
 }
 
+func (self *GitCommon) findRenamesArg() string {
+	return fmt.Sprintf("--find-renames=%d%%", self.UserConfig().Git.RenameSimilarityThreshold)
+}
+
 // Merge commits are compared against their first parent, so the stats cover
 // what the merge brought in.
 func (self *CommitCommands) GetCommitDiffStats(hash string) (DiffStats, error) {
 	cmdArgs := NewGitCmd("show").
-		Arg("--format=", "--no-renames", "--diff-merges=first-parent", "--raw", "--numstat", "-z").
+		Arg("--format=", self.findRenamesArg(), "--diff-merges=first-parent", "--raw", "--numstat", "-z").
 		Arg(hash).
 		ToArgv()
 
@@ -82,35 +92,52 @@ func (self *CommitCommands) GetCommitDiffStats(hash string) (DiffStats, error) {
 		return DiffStats{}, err
 	}
 
-	return parseCommitDiffStats(output), nil
+	return parseDiffStats(output)
 }
 
-// Parses --raw entries (":<modes> <hashes> <status>" followed by a path token)
-// and --numstat entries ("<added>\t<deleted>\t<path>"), all NUL-separated.
-func parseCommitDiffStats(output string) DiffStats {
+// Parses NUL-separated --raw and --numstat entries. A --raw entry is
+// ":<modes> <hashes> <status>" followed by one path, or by the source and
+// destination paths for a rename or copy. A --numstat entry is
+// "<added>\t<deleted>\t<path>", or "<added>\t<deleted>\t" followed by the
+// source and destination paths for a rename or copy.
+func parseDiffStats(output string) (DiffStats, error) {
 	stats := DiffStats{}
 
-	tokens := strings.Split(output, "\x00")
+	tokens := strings.Split(strings.TrimSuffix(output, "\x00"), "\x00")
 	for i := 0; i < len(tokens); i++ {
 		token := tokens[i]
+		if token == "" {
+			continue
+		}
 
 		if strings.HasPrefix(token, ":") {
 			fields := strings.Fields(token)
-			switch fields[len(fields)-1] {
+			status := fields[len(fields)-1][:1]
+			switch status {
 			case "A":
 				stats.FilesAdded++
+				i++
+			case "C":
+				stats.FilesAdded++
+				i += 2
 			case "D":
 				stats.FilesRemoved++
-			default:
+				i++
+			case "M", "T":
 				stats.FilesChanged++
+				i++
+			case "R":
+				stats.FilesChanged++
+				i += 2
+			default:
+				return DiffStats{}, fmt.Errorf("unexpected diff status %q in %q", status, token)
 			}
-			i++
 			continue
 		}
 
 		numstat := strings.SplitN(token, "\t", 3)
 		if len(numstat) != 3 {
-			continue
+			return DiffStats{}, fmt.Errorf("unexpected numstat entry %q", token)
 		}
 		// binary files report "-" and count as zero lines
 		if added, err := strconv.Atoi(numstat[0]); err == nil {
@@ -119,7 +146,10 @@ func parseCommitDiffStats(output string) DiffStats {
 		if deleted, err := strconv.Atoi(numstat[1]); err == nil {
 			stats.LinesDeleted += deleted
 		}
+		if numstat[2] == "" {
+			i += 2
+		}
 	}
 
-	return stats
+	return stats, nil
 }
