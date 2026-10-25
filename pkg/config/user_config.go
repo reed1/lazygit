@@ -518,6 +518,7 @@ type KeybindingFilesConfig struct {
 	CopyFileInfoToClipboard  string `yaml:"copyFileInfoToClipboard"`
 	CollapseAll              string `yaml:"collapseAll"`
 	ExpandAll                string `yaml:"expandAll"`
+	NextFile                 string `yaml:"nextFile"` // fork: next file without staging
 }
 
 type KeybindingBranchesConfig struct {

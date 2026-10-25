@@ -18,6 +18,16 @@ Day-to-day use leaves it unset.
 
 When pressing the space key (stage/unstage keybinding) on a **file** in the files panel, the cursor automatically moves down to the next file in the tree. This allows for faster sequential staging/unstaging of files without manually pressing 'j' (down) after each space press.
 
+### Next File Without Staging
+
+The `keybinding.files.nextFile` command moves the cursor to the next file in the tree, skipping directories, the same way space does after staging, but leaves the current file's staged state alone. It is unbound by default:
+
+```yaml
+keybinding:
+  files:
+    nextFile: n
+```
+
 ### Edit Key Works on Folders
 
 Pressing `e` (edit) on a **folder** in the files panel now opens it using the `os.openDirInEditor` config instead of showing an error. This allows configuring a terminal to open at the folder location.

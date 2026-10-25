@@ -206,6 +206,7 @@ func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types
 			Tooltip:           self.c.Tr.ExpandAllTooltip,
 			GetDisabledReason: self.require(self.isInTreeMode),
 		},
+		self.nextFileBinding(opts), // fork: next file without staging
 	}
 }
 
