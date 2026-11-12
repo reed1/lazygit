@@ -36,6 +36,10 @@ Pressing `e` (edit) on a **folder** in the files panel now opens it using the `o
 
 The status panel shows the HEAD commit's age (e.g. `5h`) in place of the `✓` that marks a branch in sync with its upstream.
 
+### Tmp Mirror Warning in Status Panel
+
+With `RS_GIT_TMP_MIRROR=1` set, the status panel content is replaced with `⚠️ TMP_MIRROR ⚠️` instead of the usual `repo → branch` line.
+
 ### Changes Panel Instead of Stash and Command Log
 
 The stash panel at the bottom of the side column is replaced by a non-focusable **Changes** panel summarising all uncommitted changes against `HEAD` (staged, unstaged and untracked):

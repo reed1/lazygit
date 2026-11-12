@@ -707,6 +707,11 @@ func (self *RefreshHelper) refreshStatus() {
 	self.c.Mutexes().RefreshingStatusMutex.Lock()
 	defer self.c.Mutexes().RefreshingStatusMutex.Unlock()
 
+	if presentation.ShowTmpMirrorWarning() { // fork: tmp mirror warning
+		self.c.SetViewContent(self.c.Views().Status, presentation.FormatTmpMirrorWarning())
+		return
+	}
+
 	currentBranch := self.refsHelper.GetCheckedOutRef()
 	if currentBranch == nil {
 		// need to wait for branches to refresh
