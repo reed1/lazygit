@@ -15,8 +15,9 @@ import (
 )
 
 // Fork: the stash window's slot is taken over by the Changes panel, which
-// summarises all uncommitted changes against HEAD, or the selected commit's
-// changes while browsing commits.
+// summarises the staged changes when anything is staged, otherwise all
+// uncommitted changes against HEAD, or the selected commit's changes while
+// browsing commits.
 
 const diffStatsTitle = "Changes"
 
@@ -74,10 +75,27 @@ func (self *RefreshHelper) RenderUncommittedDiffStats() {
 		return
 	}
 
-	stats := self.c.Git().Loaders.FileLoader.GetDiffStats(self.c.Model().Files)
+	files := self.c.Model().Files
+	fileLoader := self.c.Git().Loaders.FileLoader
+
+	title := diffStatsTitle
+	var stats git_commands.DiffStats
+	var err error
+	if lo.SomeBy(files, func(file *models.File) bool { return file.HasStagedChanges }) {
+		title = fmt.Sprintf("%s - staged", diffStatsTitle)
+		stats, err = fileLoader.GetStagedDiffStats(files)
+	} else {
+		stats, err = fileLoader.GetUncommittedDiffStats(files)
+	}
 
 	self.c.OnUIThread(func() error {
-		self.setDiffStatsContent(diffStatsTitle, formatDiffStats(stats))
+		if err != nil {
+			self.c.Log.Error(err)
+			self.setDiffStatsContent(title, "")
+			return nil
+		}
+
+		self.setDiffStatsContent(title, formatDiffStats(stats))
 		return nil
 	})
 }

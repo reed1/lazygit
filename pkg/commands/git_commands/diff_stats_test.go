@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFileLoaderGetDiffStats(t *testing.T) {
+func TestFileLoaderGetUncommittedDiffStats(t *testing.T) {
 	runner := oscommands.NewFakeRunner(t).
 		ExpectGitArgs([]string{"diff", "--numstat", "-z", "--find-renames=50%", "HEAD"},
 			"4\t1\tmodified.txt\x002\t0\tstaged.txt\x000\t3\tdeleted.txt\x00-\t-\timage.png\x00"+
@@ -44,13 +44,54 @@ func TestFileLoaderGetDiffStats(t *testing.T) {
 		cmd:       oscommands.NewDummyCmdObjBuilder(runner),
 	}
 
+	stats, err := loader.GetUncommittedDiffStats(files)
+	assert.NoError(t, err)
 	assert.Equal(t, DiffStats{
 		LinesAdded:   10,
 		LinesDeleted: 5,
 		FilesAdded:   4,
 		FilesChanged: 4,
 		FilesRemoved: 1,
-	}, loader.GetDiffStats(files))
+	}, stats)
+}
+
+func TestFileLoaderGetStagedDiffStats(t *testing.T) {
+	runner := oscommands.NewFakeRunner(t).
+		ExpectGitArgs([]string{"diff", "--cached", "--numstat", "-z", "--find-renames=50%", "HEAD"},
+			"3\t1\tmodified.txt\x002\t0\tstaged.txt\x000\t4\tdeleted.txt\x00"+
+				"1\t1\t\x00old-a.txt\x00new-a.txt\x00",
+			nil,
+		)
+
+	newFile := func(path string, shortStatus string) *models.File {
+		file := &models.File{Path: path}
+		models.SetStatusFields(file, shortStatus)
+		return file
+	}
+	files := []*models.File{
+		newFile("modified.txt", "MM"),
+		newFile("staged.txt", "AM"),
+		newFile("deleted.txt", "D "),
+		newFile("new-a.txt", "RM"),
+		newFile("unstaged.txt", " M"),
+		newFile("unstaged-deleted.txt", " D"),
+		newFile("untracked.txt", "??"),
+	}
+
+	loader := &FileLoader{
+		GitCommon: buildGitCommon(commonDeps{appState: &config.AppState{}, userConfig: config.GetDefaultConfig()}),
+		cmd:       oscommands.NewDummyCmdObjBuilder(runner),
+	}
+
+	stats, err := loader.GetStagedDiffStats(files)
+	assert.NoError(t, err)
+	assert.Equal(t, DiffStats{
+		LinesAdded:   6,
+		LinesDeleted: 6,
+		FilesAdded:   1,
+		FilesChanged: 2,
+		FilesRemoved: 1,
+	}, stats)
 }
 
 func TestCommitCommandsGetCommitDiffStats(t *testing.T) {

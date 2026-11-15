@@ -10,8 +10,7 @@ import (
 	"github.com/spf13/afero"
 )
 
-// Fork: totals for the Changes panel, covering staged, unstaged and untracked
-// changes against HEAD.
+// Fork: totals for the Changes panel.
 type DiffStats struct {
 	LinesAdded   int
 	LinesDeleted int
@@ -20,21 +19,38 @@ type DiffStats struct {
 	FilesRemoved int
 }
 
-func (self *FileLoader) GetDiffStats(files []*models.File) DiffStats {
-	stats := DiffStats{}
-
-	numstat, err := self.cmd.New(
-		NewGitCmd("diff").
-			Arg("--numstat", "-z", self.findRenamesArg(), "HEAD").
-			ToArgv(),
-	).DontLog().RunWithOutput()
+// Only the staged changes, so the panel previews what the next commit holds.
+func (self *FileLoader) GetStagedDiffStats(files []*models.File) (DiffStats, error) {
+	stats, err := self.numstatLineStats("--cached")
 	if err != nil {
-		self.Log.Error(err)
-	} else if lineStats, err := parseDiffStats(numstat); err != nil {
-		self.Log.Error(err)
-	} else {
-		stats.LinesAdded = lineStats.LinesAdded
-		stats.LinesDeleted = lineStats.LinesDeleted
+		return DiffStats{}, err
+	}
+
+	for _, file := range files {
+		if !file.HasStagedChanges {
+			continue
+		}
+
+		switch status := file.ShortStatus[:1]; status {
+		case "A", "C":
+			stats.FilesAdded++
+		case "D":
+			stats.FilesRemoved++
+		case "M", "T", "R":
+			stats.FilesChanged++
+		default:
+			return DiffStats{}, fmt.Errorf("unexpected staged status %q for %q", status, file.Path)
+		}
+	}
+
+	return stats, nil
+}
+
+// Staged, unstaged and untracked changes against HEAD.
+func (self *FileLoader) GetUncommittedDiffStats(files []*models.File) (DiffStats, error) {
+	stats, err := self.numstatLineStats()
+	if err != nil {
+		return DiffStats{}, err
 	}
 
 	for _, file := range files {
@@ -52,7 +68,26 @@ func (self *FileLoader) GetDiffStats(files []*models.File) DiffStats {
 		}
 	}
 
-	return stats
+	return stats, nil
+}
+
+func (self *FileLoader) numstatLineStats(extraArgs ...string) (DiffStats, error) {
+	numstat, err := self.cmd.New(
+		NewGitCmd("diff").
+			Arg(extraArgs...).
+			Arg("--numstat", "-z", self.findRenamesArg(), "HEAD").
+			ToArgv(),
+	).DontLog().RunWithOutput()
+	if err != nil {
+		return DiffStats{}, err
+	}
+
+	lineStats, err := parseDiffStats(numstat)
+	if err != nil {
+		return DiffStats{}, err
+	}
+
+	return DiffStats{LinesAdded: lineStats.LinesAdded, LinesDeleted: lineStats.LinesDeleted}, nil
 }
 
 // Binary files (detected like git does, by a NUL byte) count as zero lines.
